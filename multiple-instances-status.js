@@ -47,8 +47,6 @@ InstanceStatus = {
 
 			events.emit('registerInstance', result, instance);
 
-			process.on('exit', InstanceStatus.onExit);
-
 			return result;
 		} catch (e) {
 			return e;
@@ -61,8 +59,6 @@ InstanceStatus = {
 			InstanceStatus.stop();
 
 			events.emit('unregisterInstance', InstanceStatus.id());
-
-			process.removeListener('exit', InstanceStatus.onExit);
 
 			return result;
 		} catch (e) {
