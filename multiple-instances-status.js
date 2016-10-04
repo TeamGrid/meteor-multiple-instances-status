@@ -2,9 +2,9 @@ var events = new (Npm.require('events').EventEmitter)(),
 	collectionName = process.env.MULTIPLE_INSTANCES_COLLECTION_NAME || 'instances',
 	defaultPingInterval = 2000; // 2s
 
-var Intances = new Meteor.Collection(collectionName);
+var Instances = new Meteor.Collection(collectionName);
 
-Intances._ensureIndex({_updatedAt: 1}, {expireAfterSeconds: 60});
+Instances._ensureIndex({_updatedAt: 1}, {expireAfterSeconds: 60});
 
 InstanceStatus = {
 	name: undefined,
@@ -13,7 +13,7 @@ InstanceStatus = {
 	events: events,
 
 	getCollection: function() {
-		return Intances;
+		return Instances;
 	},
 
 	registerInstance: function(name, extraInformation) {
@@ -41,8 +41,8 @@ InstanceStatus = {
 		}
 
 		try {
-			Intances.upsert({_id: InstanceStatus.id()}, instance);
-			var result = Intances.findOne({_id: InstanceStatus.id()});
+			Instances.upsert({_id: InstanceStatus.id()}, instance);
+			var result = Instances.findOne({_id: InstanceStatus.id()});
 			InstanceStatus.start();
 
 			events.emit('registerInstance', result, instance);
@@ -55,7 +55,7 @@ InstanceStatus = {
 
 	unregisterInstance: function() {
 		try {
-			var result = Intances.remove({_id: InstanceStatus.id()});
+			var result = Instances.remove({_id: InstanceStatus.id()});
 			InstanceStatus.stop();
 
 			events.emit('unregisterInstance', InstanceStatus.id());
@@ -84,7 +84,7 @@ InstanceStatus = {
 	},
 
 	ping: function() {
-		var count = Intances.update(
+		var count = Instances.update(
 			{
 				_id: InstanceStatus.id()
 			},
@@ -104,7 +104,7 @@ InstanceStatus = {
 	},
 
 	activeLogs: function() {
-		Intances.find().observe({
+		Instances.find().observe({
 			added: function(record) {
 				var log = '[multiple-instances-status] Server connected: ' + record.name + ' - ' + record._id;
 				if (record._id == InstanceStatus.id()) {
